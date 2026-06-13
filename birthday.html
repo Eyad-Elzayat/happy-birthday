@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+
+    <style>
+        /* Base Styles & Soft Theme */
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #ebedee; color: #333; overflow-x: hidden; text-align: center; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: #d63384; font-weight: 600; }
+        p { max-width: 650px; margin: 10px auto; font-weight: 300; line-height: 1.6; color: #555; }
+        
+        section { padding: 80px 20px; min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 1px solid #d1d9e6;}
+        
+        /* Hero Section */
+        #hero { font-size: 2rem; min-height: 100vh; background: #fff; }
+        .scroll-down { margin-top: 50px; font-size: 1rem; color: #888; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-15px); } 60% { transform: translateY(-7px); } }
+
+        /* Widget Containers */
+        .widget-wrapper { width: 100%; max-width: 800px; margin: 20px auto; padding: 30px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); box-sizing: border-box; }
+        
+        /* Range of Motion Timeline Styles */
+        .slider-container { margin: 30px 0; }
+        input[type=range] { width: 100%; max-width: 500px; accent-color: #d63384; cursor: pointer; }
+        #rom-degree { font-size: 2rem; font-weight: 600; color: #d63384; margin: 10px 0; }
+        #rom-memory { font-size: 1.2rem; min-height: 60px; font-style: italic; }
+        
+        /* Image Container Styles for the Timeline */
+        .memory-image-container { width: 100%; max-width: 500px; height: 300px; margin: 20px auto; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: #f8f9fa; border: 4px solid white; }
+        #rom-image { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease; }
+
+        /* Code Solver Styles */
+        .code-editor { background: #282c34; color: #abb2bf; text-align: left; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 1.1rem; margin-bottom: 20px; }
+        textarea { width: 100%; background: transparent; color: #98c379; border: none; outline: none; font-family: monospace; font-size: 1.1rem; resize: none; overflow: hidden; }
+        #heartCanvas { display: block; margin: 20px auto; background: #fdfbfb; border-radius: 10px; border: 1px solid #eee; }
+        #solver-message { font-weight: 600; min-height: 25px; margin-top: 15px; }
+
+        /* Generic Buttons */
+        .btn { background-color: #d63384; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; border-radius: 30px; cursor: pointer; transition: background-color 0.3s; font-family: 'Poppins', sans-serif; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        .btn:hover { background-color: #b02a6c; }
+
+        /* Flip Card Gallery - UPDATED TO HORIZONTAL */
+        .gallery-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1000px; margin-top: 30px;}
+        .flip-card { background-color: transparent; width: 350px; height: 230px; perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-radius: 15px;}
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .flip-card-front { background-color: #f8f9fa; background-size: cover; background-position: center; border: 4px solid white;}
+        .flip-card-back { background-color: #ffd1dc; color: #333; transform: rotateY(180deg); font-size: 1.1rem; font-style: italic; }
+
+        /* Memory Wall / Photo Grid Styles */
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; width: 100%; max-width: 1000px; margin-top: 30px; padding: 0 20px; box-sizing: border-box; }
+        .photo-grid img { width: 100%; height: 250px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; border: 3px solid white; }
+        .photo-grid img:hover { transform: scale(1.05); box-shadow: 0 8px 16px rgba(0,0,0,0.1); z-index: 2; }
+
+        /* Final Love Letter Section */
+        #final-letter { background-color: #fce4ec; border-bottom: none;}
+        .letter-content { max-width: 650px; text-align: left; padding: 40px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative;}
+        .letter-content:before { content: '❤️'; position: absolute; top: -15px; left: -15px; font-size: 2rem; background: white; border-radius: 50%; padding: 5px;}
+        .letter-signature { margin-top: 30px; font-style: italic; color: #d63384; font-weight: 600; text-align: right; }
+
+    </style>
+</head>
+<body>
+
+    <section id="hero">
+        <h1><span id="typed-text"></span></h1>
+        <div class="scroll-down">Start scrolling ↓</div>
+    </section>
+
+    <section id="rom-timeline">
+        <h2>Our Story: Range of Motion</h2>
+        <p>A Physical Therapy doctor's view of how far we've come, measured in degrees of memory.</p>
+        <div class="widget-wrapper">
+            <div id="rom-degree">0°</div>
+            
+            <div class="memory-image-container">
+                <img id="rom-image" src="" alt="Memory">
+            </div>
+
+            <div class="slider-container">
+                <input type="range" id="memorySlider" min="0" max="4" value="0" oninput="updateMemory()">
+            </div>
+            <p id="rom-memory">Slide to explore our timeline...</p>
+        </div>
+    </section>
+
+    <section id="heart-solver">
+        <h2>Unlocking the Logic</h2>
+        <p>As an engineer, I know logic matters. Can you fix the code below to unlock the math of my heart?</p>
+        <div class="widget-wrapper">
+            <div class="code-editor">
+                <span>function checkLoveLevel() {</span><br>
+                <span style="padding-left: 20px;">let loveStrength = <textarea id="codeInput" rows="1" style="width: 50px;">0</textarea>;</span><br>
+                <span style="padding-left: 20px;">if (loveStrength > 100) {</span><br>
+                <span style="padding-left: 40px; color: #61afef;">return true; // Unlocks the graph</span><br>
+                <span style="padding-left: 20px;">} else {</span><br>
+                <span style="padding-left: 40px; color: #e06c75;">return false;</span><br>
+                <span style="padding-left: 20px;">}</span><br>
+                <span>}</span>
+            </div>
+            <button class="btn" onclick="runCode()">Run Code</button>
+            <p id="solver-message" style="color: #555;">Change the variable to a number greater than 100 and click Run!</p>
+            <canvas id="heartCanvas" width="300" height="300" style="display: none;"></canvas>
+        </div>
+    </section>
+
+    <section id="memories">
+        <h2>A Few Highlights</h2>
+        <p>Hover over the cards to see the memory on the back.</p>
+        <div class="gallery-container">
+            <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front" id="card-img-0"></div><div class="flip-card-back"><p>"Remember that time ❤" </p></div></div></div>
+            <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front" id="card-img-1"></div><div class="flip-card-back"><p>"My favorite photo of us."</p></div></div></div>
+            <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front" id="card-img-2"></div><div class="flip-card-back"><p>"The moment I knew I was lucky to have you."</p></div></div></div>
+            <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front" id="card-img-3"></div><div class="flip-card-back"><p>"The time you made me laugh until it hurt."</p></div></div></div>
+        </div>
+    </section>
+
+    <section id="photo-wall">
+        <h2>The Memory Wall</h2>
+        <p>Because there are too many good moments to just pick five.</p>
+        <div class="photo-grid" id="dynamic-photo-wall">
+            </div>
+    </section>
+
+    <section id="final-letter">
+        <h2>A Final Letter</h2>
+        <div class="letter-content">
+            <p>Happy Birthday, Bibaaaaaaaaaaaaa!</p>
+            <p>I hope this site shows you how much effort and love went into making your special day. I wanted to build something that represented both of us—the engineering, coding, and math that I love, and the medical precision, care, and dedication you bring as a Physical Therapy doctor.</p>
+            <p>But beyond the graphs, the math puzzles, and the memories we flipped through, the simplest logic is this: You are the core variable that makes everything in my life make sense. Every moment with you is a new milestone, and my 'happiness range of motion' expands every single day.</p>
+            <p>You make me want to be a better engineer and a better person. You have a kindness that inspires me and a logic that grounds me. I love you, and I am so grateful to celebrate this special day with you.</p>
+            <p>Here’s to another year of solving puzzles, exploring new ranges of motion, and making memories that never fade.</p>
+            <p>wish u all the best ya amorty b7bk awy awy awy </p>
+            <p class="letter-signature">Love,</p>
+            <p class="letter-signature">Eyad</p>
+        </div>
+    </section>
+
+    <script>
+        // =========================================================================
+        // 📷 ADD ALL YOUR PHOTOS HERE 📷
+        // Just put your file names between the quotes (e.g. "my-photo.jpg")
+        // Note: Keep your photo files in the exact same folder as this HTML file.
+        // =========================================================================
+        
+        const myPhotos = {
+            
+            // 1. TIMELINE PHOTOS (Must be exactly 5 photos)
+            timeline: [
+                "WhatsApp Image 2026-06-13 at 2.22.32 PM.jpeg", // Photo 1 (0°)
+                "WhatsApp Image 2026-06-13 at 2.22.33 PM (3).jpeg", // Photo 2 (45°)
+                "WhatsApp Image 2026-06-13 at 2.22.34 PM.jpeg", // Photo 3 (90°)
+                "WhatsApp Image 2026-06-13 at 2.22.35 PM (1).jpeg", // Photo 4 (135°)
+                "WhatsApp Image 2026-06-13 at 2.22.36 PM.jpeg"  // Photo 5 (180°)
+            ],
+
+            // 2. FLIP CARD PHOTOS (Must be exactly 4 photos)
+            flipCards: [
+                "WhatsApp Image 2026-06-13 at 2.54.15 PM.jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.34 PM (2).jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.35 PM (5).jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.35 PM (3).jpeg"
+            ],
+
+            // 3. THE MEMORY WALL (Add as many or as few as you want!)
+            // Make sure to put a comma after every line EXCEPT the very last one.
+            wall: [
+                "WhatsApp Image 2026-06-13 at 2.26.38 PM.jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.35 PM (6).jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.36 PM (3).jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.32 PM (1).jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.33 PM.jpeg",
+                "WhatsApp Image 2026-06-13 at 2.22.33 PM (1).jpeg",
+            ]
+        };
+        // =========================================================================
+
+        // --- 1. System Initialization ---
+        window.onload = function() {
+            // Trigger Confetti
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffb6c1', '#ff69b4', '#ffffff'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffb6c1', '#ff69b4', '#ffffff'] });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+
+            // Inject the photos from the configuration area
+            loadPhotos();
+            updateMemory(); // Initialize timeline image on load
+        };
+
+        // --- 2. Photo Injector Logic ---
+        function loadPhotos() {
+            // Inject Flip Card Photos
+            for(let i = 0; i < myPhotos.flipCards.length; i++) {
+                let cardFront = document.getElementById(`card-img-${i}`);
+                if (cardFront) {
+                    cardFront.style.backgroundImage = `url('${myPhotos.flipCards[i]}')`;
+                }
+            }
+
+            // Inject Memory Wall Photos
+            const wallContainer = document.getElementById('dynamic-photo-wall');
+            myPhotos.wall.forEach(photoUrl => {
+                const img = document.createElement('img');
+                img.src = photoUrl;
+                img.alt = "Memory";
+                wallContainer.appendChild(img);
+            });
+        }
+
+        // --- 3. Typed.js Initialization ---
+        var typed = new Typed('#typed-text', {
+            strings: [
+                "Happy Birthday... ^1000", 
+                "Engineer? PT Doctor?^1000", 
+                "It's about our logic and our motion.^1000",
+                "Happy Birthday, Habobyyyyy! ❤️"
+            ],
+            typeSpeed: 50,
+            backSpeed: 30,
+            showCursor: true,
+            cursorChar: '|',
+            loop: false
+        });
+
+        // --- 4. Range of Motion Timeline Logic ---
+        const memoryData = [
+            { degree: "0°", text: "The starting point. our first time ana wnta nkedaho" },
+            { degree: "45°", text: "Getting comfortable. first date" },
+            { degree: "90°", text: "A solid right angle. firt time meeting lolaaaaaa" },
+            { degree: "135°", text: "Expanding our horizons. the best inside joke esra7a" },
+            { degree: "180°", text: "Full extension. Today, celebrating you and how far we've come!" }
+        ];
+
+        function updateMemory() {
+            const slider = document.getElementById("memorySlider");
+            const degreeDisplay = document.getElementById("rom-degree");
+            const memoryDisplay = document.getElementById("rom-memory");
+            const imageDisplay = document.getElementById("rom-image"); 
+            
+            const index = slider.value;
+            
+            degreeDisplay.innerText = memoryData[index].degree;
+            memoryDisplay.innerText = memoryData[index].text;
+            imageDisplay.src = myPhotos.timeline[index]; // Pulls image from your custom list
+        }
+
+        // --- 5. Math Heart Solver Logic ---
+        function runCode() {
+            const inputVal = document.getElementById('codeInput').value;
+            const messageEl = document.getElementById('solver-message');
+            const canvas = document.getElementById('heartCanvas');
+            
+            if (!isNaN(inputVal) && Number(inputVal) > 100) {
+                messageEl.style.color = "#28a745";
+                messageEl.innerText = "Logic correct! You unlocked the math of my heart.";
+                canvas.style.display = "block";
+                drawHeart();
+            } else {
+                messageEl.style.color = "#d63384";
+                messageEl.innerText = "Almost... try increasing the loveStrength variable to over 100!";
+                canvas.style.display = "none";
+            }
+        }
+
+        function drawHeart() {
+            const canvas = document.getElementById('heartCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            ctx.beginPath();
+            for (let t = 0; t <= Math.PI * 2; t += 0.01) {
+                let x = 16 * Math.pow(Math.sin(t), 3);
+                let y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+                
+                let drawX = centerX + (x * 7);
+                let drawY = centerY - (y * 7);
+                
+                if (t === 0) {
+                    ctx.moveTo(drawX, drawY);
+                } else {
+                    ctx.lineTo(drawX, drawY);
+                }
+            }
+            
+            ctx.fillStyle = '#d63384';
+            ctx.fill();
+        }
+    </script>
+</body>
+</html>
